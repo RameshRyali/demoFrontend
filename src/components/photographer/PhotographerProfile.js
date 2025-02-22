@@ -14,6 +14,7 @@ const PhotographerProfile = () => {
     specialization: [],
     experience: "",
     profilePhoto: "",
+    packages: [],
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
