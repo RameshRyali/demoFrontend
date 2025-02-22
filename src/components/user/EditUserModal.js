@@ -1,16 +1,20 @@
 import React, { useState } from "react";
-import { updateUserProfile } from "../../services/api";
+import { updateUserProfile } from "../../services/api"; 
 
-const EditUserModal = ({ user, token, onClose }) => {
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dkpectnvk/image/upload";
+const UPLOAD_PRESET = "mediafiles"; 
+
+const EditUserModal = ({ user, token, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    address: user.address,
-    profilePhoto: user.profilePhoto,
+    name: user.name || "",
+    email: user.email || "",
+    phone: user.phone || "",
+    address: user.address || "",
+    profilePhoto: user.profilePhoto || "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,20 +30,38 @@ const EditUserModal = ({ user, token, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const formDataWithFile = new FormData();
-      formDataWithFile.append('name', formData.name);
-      formDataWithFile.append('email', formData.email);
-      formDataWithFile.append('phone', formData.phone);
-      formDataWithFile.append('address', formData.address);
-      if (selectedFile) {
-        formDataWithFile.append('profilePhoto', selectedFile);
-      }
+    
+    setUploading(true);
+    let profilePhotoUrl = formData.profilePhoto;
 
-      await updateUserProfile(formDataWithFile, token);
+    if (selectedFile) {
+      try {
+        const formDataCloud = new FormData();
+        formDataCloud.append("file", selectedFile);
+        formDataCloud.append("upload_preset", UPLOAD_PRESET);
+
+        const response = await fetch(CLOUDINARY_URL, {
+          method: "POST",
+          body: formDataCloud,
+        });
+
+        const data = await response.json();
+        profilePhotoUrl = data.secure_url;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+
+    const updatedUserData = { ...formData, profilePhoto: profilePhotoUrl };
+
+    try {
+      const updatedUser = await updateUserProfile(updatedUserData, token); // Use imported function
+      onUpdate(updatedUser); 
       onClose();
     } catch (error) {
-      console.error("Error updating user profile:", error);
+      console.error("Error updating user:", error);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -97,6 +119,7 @@ const EditUserModal = ({ user, token, onClose }) => {
               className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>
+          {uploading && <p className="text-blue-600">Uploading...</p>}
           <div className="flex justify-end">
             <button
               type="button"
@@ -108,8 +131,9 @@ const EditUserModal = ({ user, token, onClose }) => {
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              disabled={uploading}
             >
-              Save
+              {uploading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

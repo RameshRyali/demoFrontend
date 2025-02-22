@@ -1,34 +1,55 @@
-// src/pages/PhotographerNotifications.js
-import React, { useState, useEffect } from 'react';
-import { getPhotographerNotifications } from '../../services/api';
+import React, { useEffect, useState } from 'react';
+import { getPhotographerNotifications } from '../../services/api';  // Assuming getPhotographerNotifications is in 'api.js'
+ 
 
-const PhotographerNotifications = ({ token }) => {
+const PhotographerNotifications = ({ token, photographerId }) => {
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!photographerId) {
+      console.error("Photographer ID is missing");
+      return;
+    }
+
     const fetchNotifications = async () => {
       try {
-        const data = await getPhotographerNotifications(token);
-        setNotifications(data);
+        const data = await getPhotographerNotifications(token, photographerId);
+        
+        if (data.length) {
+          setNotifications(data);
+        } else {
+          console.error('No notifications found.');
+        }
       } catch (error) {
         console.error('Error fetching notifications:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchNotifications();
-  }, [token]);
+  }, [photographerId, token]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Notifications</h2>
-      <ul className="space-y-4">
-        {notifications.map((notification) => (
-          <li key={notification._id} className="border p-4 rounded shadow">
-            <p><strong>Message:</strong> {notification.message}</p>
-            <p><strong>Date:</strong> {new Date(notification.date).toLocaleDateString()}</p>
-          </li>
-        ))}
-      </ul>
+      <h2>Notifications</h2>
+      {notifications.length === 0 ? (
+        <p>No notifications available.</p>
+      ) : (
+        <ul>
+          {notifications.map((notification) => (
+            <li key={notification._id}>
+              <p>{notification.message}</p>
+              <p>{new Date(notification.date).toLocaleString()}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

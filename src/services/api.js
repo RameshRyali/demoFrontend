@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
-// User APIs
+// User APIs http://localhost:5000/
 export const registerUser = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/users/register`, userData);
@@ -21,16 +21,21 @@ export const loginUser = async (credentials) => {
   }
 };
 
+ 
+
 export const getUserProfile = async (token) => {
   try {
     const response = await axios.get(`${API_URL}/users/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("Fetched User Data:", response.data); // Debugging
     return response.data;
   } catch (error) {
+    console.error("Error Fetching User:", error.response?.data || error);
     throw error.response.data;
   }
 };
+
 
 export const updateUserProfile = async (userData, token) => {
   try {
@@ -154,6 +159,50 @@ export const uploadPortfolio = async (portfolioData, token) => {
   }
 };
 
+export const getAllPortfolios = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/photographers/portfolio`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+export const updatePortfolio = async (portfolioId, updatedData, token) => {
+  try {
+    const response = await axios.put(`${API_URL}/photographers/portfolio`, { portfolioId, ...updatedData }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const deletePortfolio = async (portfolioId, token) => {
+  try {
+    const response = await axios.delete(`${API_URL}/photographers/portfolio/${portfolioId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+
+export const getPhotographerPortfolio = async (photographerId, token) => {
+  try {
+    const response = await axios.get(`${API_URL}/photographers/portfolio/${photographerId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.portfolio;
+  } catch (error) {
+    console.error("Error fetching portfolio:", error.response?.data || error);
+    return [];
+  }
+};
 export const getPhotographerBookings = async (token) => {
   try {
     const response = await axios.get(`${API_URL}/photographers/bookings`, {
@@ -191,17 +240,7 @@ export const updateBookingStatus = async (bookingId, newStatus) => {
   }
 };
 
-export const getPhotographerNotifications = async (token) => {
-  try {
-    const response = await axios.get(`${API_URL}/photographers/notifications`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
+ 
 // Admin APIs
 export const registerAdmin = async (adminData) => {
   try {
@@ -220,6 +259,25 @@ export const loginAdmin = async (credentials) => {
     throw error.response.data;
   }
 };
+
+
+// In api.js
+export const getAdminProfile = async (token) => {
+  const response = await fetch("/api/admin/profile", {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch admin profile");
+  }
+
+  return await response.json();
+};
+
+
 
 export const getAllUsers = async (token) => {
   try {
@@ -262,5 +320,50 @@ export const viewAnalytics = async (token) => {
     return response.data;
   } catch (error) {
     throw error.response.data;
+  }
+};
+
+export const submitRating = async (photographerId, userId, rating, comment, bookingId, token) => {
+  console.log("📸 Photographer ID received in submitRating:", photographerId);
+
+  if (!photographerId) {
+      console.error("🚨 Error: photographerId is undefined!");
+      return { message: "Photographer ID is missing" };
+  }
+
+  try {
+      const response = await axios.post(
+          `http://localhost:5000/api/photographers/rate/${photographerId}`,
+          { userId, rating, comment, bookingId },
+          { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+  } catch (error) {
+      console.error("🚨 Error submitting rating: ", error.response?.data);
+      throw error;
+  }
+};
+
+export const getPhotographerNotifications = async (token, photographerId) => {
+  try {
+    if (!token || !photographerId) {
+      console.error('Missing token or photographer ID');
+      return [];  // Return an empty array if there's no token or photographerId
+    }
+    
+    const response = await axios.get(`http://localhost:5000/api/photographers/${photographerId}/notifications`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    console.log('Response Status:', response.status);
+    console.log('Response Data:', response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    if (error.response) {
+      console.error('Error Response:', error.response);
+    }
+    return [];
   }
 };

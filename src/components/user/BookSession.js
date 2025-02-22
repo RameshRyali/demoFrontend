@@ -10,6 +10,7 @@ const BookSession = ({ token, photographerId }) => {
     photographerId: photographerId || "",
     date: "",
     timeSlot: "",
+    location: "",  // ✅ Added location field
     package: {
       name: "",
       price: 0,
@@ -68,6 +69,17 @@ const BookSession = ({ token, photographerId }) => {
           onChange={handleChange}
           required
         />
+        
+        {/* ✅ New Input Field for Location */}
+        <input
+          type="text"
+          name="location"
+          placeholder="Enter Location"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          onChange={handleChange}
+          required
+        />
+
         <input
           type="text"
           name="name"

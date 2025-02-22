@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 import LandingPage from "./components/user/LandingPage";
@@ -28,11 +28,9 @@ import PhotographerNotifications from "./components/photographer/PhotographerNot
 // Admin Components
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminProfile from "./components/admin/AdminProfile";
- 
 import AdminNotifications from "./components/admin/AdminNotifications";
 import ManagePhotographers from "./components/admin/ManagePhotographers";
 import ManageUsers from "./components/admin/ManageUsers";
- 
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -107,7 +105,14 @@ const App = () => {
             <Route path="profile" element={<PhotographerProfile photographer={photographer} />} />
             <Route path="bookings" element={<PhotographerBookings token={token} />} />
             <Route path="portfolio" element={<PhotographerPortfolio photographer={photographer} token={token} />} />
-            <Route path="notifications" element={<PhotographerNotifications />} />
+            <Route
+  path="notifications"
+  element={
+    <PhotographerNotifications token={token} photographerId={photographer?._id} />
+  }
+/>
+
+            {console.log("photographer id", photographer._id)}
           </Route>
         )}
 
@@ -115,11 +120,9 @@ const App = () => {
         {token && admin && (
           <Route path="/admin-dashboard/*" element={<AdminDashboard admin={admin} setToken={setToken} setAdmin={setAdmin} />}>
             <Route path="profile" element={<AdminProfile admin={admin} />} />
-         
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="manage-photographers" element={<ManagePhotographers />} />
             <Route path="manage-users" element={<ManageUsers />} />
-     
           </Route>
         )}
       </Routes>
