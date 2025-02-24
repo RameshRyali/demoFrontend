@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getUserCompletedBookingHistory } from "../../services/api"; // Ensure correct API path
-import RatePhotographer from "./RatePhotographer"; // Import rating component
+import { getUserCompletedBookingHistory } from "../../services/api";
+import RatePhotographer from "./RatePhotographer";
 
 const History = () => {
     const [bookings, setBookings] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedBooking, setSelectedBooking] = useState(null); // Track selected booking for rating
-    const token = localStorage.getItem("token"); // Fetch token manually
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         if (!token) {
@@ -16,16 +16,12 @@ const History = () => {
             return;
         }
 
-        const getHistory = async () => {
+        const fetchBookingHistory = async () => {
             try {
                 const data = await getUserCompletedBookingHistory(token);
-
-                console.log("API Response:", JSON.stringify(data, null, 2)); // Log full API response
-
-                if (!data || !Array.isArray(data)) {
-                    throw new Error("Invalid response from server");
+                if (!Array.isArray(data)) {
+                    throw new Error("Invalid server response");
                 }
-
                 setBookings(data);
             } catch (err) {
                 setError(err.message || "Failed to fetch booking history");
@@ -34,75 +30,69 @@ const History = () => {
             }
         };
 
-        getHistory();
+        fetchBookingHistory();
     }, [token]);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+    if (loading) return <p className="text-center text-gray-600">Loading...</p>;
+    if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
     return (
-        <div style={{ padding: "20px", maxWidth: "700px", margin: "0 auto" }}>
-            <h2>Booking History</h2>
+        <div className="min-h-screen flex flex-col items-center bg-gray-100 py-10 px-6 md:px-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">📜 Booking History</h2>
+            
             {bookings.length === 0 ? (
-                <p>No completed bookings found.</p>
+                <p className="text-gray-500 text-lg">No completed bookings found.</p>
             ) : (
-                <ul style={{ listStyleType: "none", padding: 0 }}>
+                <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {bookings.map((booking) => {
-                        // Extract Photographer ID from API response
-                        const photographerId =
-                            booking.photographerId?._id ||  // Case: API returns `photographerId` as an object
-                            booking.photographerId ||       // Case: API directly includes `photographerId`
-                            null;                           // Default to null if missing
-
-                        console.log(`Booking ID: ${booking._id}, Extracted Photographer ID: ${photographerId}`);
+                        const photographerId = booking.photographerId?._id || booking.photographerId || null;
 
                         return (
-                            <li
-                                key={booking._id}
-                                style={{
-                                    padding: "10px",
-                                    borderBottom: "1px solid #ddd",
-                                    marginBottom: "5px",
-                                }}
+                            <div 
+                                key={booking._id} 
+                                className="bg-white shadow-md hover:shadow-lg rounded-lg p-5 border border-gray-200 transition-transform hover:-translate-y-1"
                             >
-                                📅 <strong>Date:</strong> {new Date(booking.date).toLocaleDateString()} |
-                                🕒 <strong>Time:</strong> {booking.timeSlot} |
-                                📸 <strong>Photographer:</strong> {booking.photographerName || "Unknown"} |
-                                ⏳ <strong>Booked On:</strong> {new Date(booking.bookedAt).toLocaleString()} |
-                                🎁 <strong>Package:</strong> {booking.package?.name || "N/A"} |
-                                💰 <strong>Price:</strong> ${booking.package?.price || "N/A"}
-
-                                {/* Show Rate Photographer button only for completed bookings */}
-                                {booking.status === "Completed" && photographerId ? (
+                                <h3 className="text-xl font-semibold text-gray-800 mb-2">📷 {booking.photographerName || "Unknown"}</h3>
+                                <p className="text-gray-600">📅 <strong>Date:</strong> {new Date(booking.date).toLocaleDateString()}</p>
+                                <p className="text-gray-600">🕒 <strong>Time:</strong> {booking.timeSlot}</p>
+                                <p className="text-gray-600">⏳ <strong>Booked On:</strong> {new Date(booking.bookedAt).toLocaleString()}</p>
+                                <p className="text-gray-600">🎁 <strong>Package:</strong> {booking.package?.name || "N/A"}</p>
+                                <p className="text-gray-600">💰 <strong>Price:</strong> ${booking.package?.price || "N/A"}</p>
+                                
+                                {booking.status === "Completed" && photographerId && (
                                     <button
-                                        onClick={() => {
-                                            console.log("Selected Booking for Rating:", booking);
-                                            console.log("Using Photographer ID:", photographerId); // ✅ Ensure correct ID is used
-
-                                            setSelectedBooking({
-                                                ...booking,
-                                                photographerId: photographerId, // ✅ Ensure extracted ID is passed
-                                            });
-                                        }}
+                                        onClick={() => setSelectedBooking({ ...booking, photographerId })}
+                                        className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-all text-sm font-medium"
                                     >
                                         ⭐ Rate Photographer
                                     </button>
-                                ) : null}
-                            </li>
+                                )}
+                            </div>
                         );
                     })}
-                </ul>
+                </div>
             )}
 
-            {/* Show rating modal when a booking is selected */}
             {selectedBooking && (
-                <RatePhotographer
-                    photographerId={selectedBooking.photographerId}
-                    bookingId={selectedBooking._id}
-                    userId={selectedBooking.userId} // Ensure userId is passed correctly
-                    token={token}
-                    onClose={() => setSelectedBooking(null)}
-                />
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center relative">
+                        <button 
+                            onClick={() => setSelectedBooking(null)} 
+                            className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-xl"
+                        >
+                            ✖
+                        </button>
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-2">Rate Photographer</h3>
+                        <p className="text-gray-600 text-sm mb-4">Share your experience and help others choose the best!</p>
+                        <RatePhotographer
+                            photographerId={selectedBooking.photographerId}
+                            bookingId={selectedBooking._id}
+                            userId={selectedBooking.userId}
+                            token={token}
+                            onClose={() => setSelectedBooking(null)}
+                        />
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -10,7 +10,7 @@ const BookSession = ({ token, photographerId }) => {
     photographerId: photographerId || "",
     date: "",
     timeSlot: "",
-    location: "",  // ✅ Added location field
+    location: "",
     package: {
       name: "",
       price: 0,
@@ -49,15 +49,15 @@ const BookSession = ({ token, photographerId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold text-center mb-4">
+    <div className="flex flex-col items-center bg-white p-8 rounded-xl shadow-lg max-w-lg mx-auto mt-10">
+      <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
         Book a Photography Session
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4 w-full">
+      <form onSubmit={handleSubmit} className="space-y-5 w-full">
         <input
           type="date"
           name="date"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
           onChange={handleChange}
           required
         />
@@ -65,26 +65,23 @@ const BookSession = ({ token, photographerId }) => {
           type="text"
           name="timeSlot"
           placeholder="Time Slot (e.g., 10:00 AM)"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
           onChange={handleChange}
           required
         />
-        
-        {/* ✅ New Input Field for Location */}
         <input
           type="text"
           name="location"
           placeholder="Enter Location"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
           onChange={handleChange}
           required
         />
-
         <input
           type="text"
           name="name"
           placeholder="Package Name"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
           onChange={handlePackageChange}
           required
         />
@@ -92,13 +89,13 @@ const BookSession = ({ token, photographerId }) => {
           type="number"
           name="price"
           placeholder="Package Price"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
           onChange={handlePackageChange}
           required
         />
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-all duration-300"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 text-lg font-medium"
         >
           Book Session
         </button>
