@@ -24,19 +24,19 @@ const LandingPage = () => {
         <p className="text-lg mb-8">Your ultimate solution for booking photography sessions.</p>
         <button
           onClick={handleUserLoginClick}
-          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-300 mr-2"
+          className="bg-black-600 text-black py-2 px-4 rounded-lg hover:bg-red-700 transition-all duration-300 mr-2"
         >
           User Login
         </button>
         <button
           onClick={handlePhotographerLoginClick}
-          className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-all duration-300 mr-2"
+          className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-300 mr-2"
         >
           Photographer Login
         </button>
         <button
           onClick={handleAdminLoginClick}
-          className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-all duration-300"
+          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-all duration-300"
         >
           Admin Login
         </button>
