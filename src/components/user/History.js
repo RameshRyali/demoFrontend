@@ -1,7 +1,7 @@
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { getUserCompletedBookingHistory } from "../../services/api";
 import RatePhotographer from "./RatePhotographer";
-import { motion, AnimatePresence } from "framer-motion";
 
 const History = () => {
     const [bookings, setBookings] = useState([]);
@@ -20,6 +20,7 @@ const History = () => {
         const fetchBookingHistory = async () => {
             try {
                 const data = await getUserCompletedBookingHistory(token);
+                console.log("Bookings Data:", data); // Log the data for debugging
                 if (!Array.isArray(data)) {
                     throw new Error("Invalid server response");
                 }
@@ -42,7 +43,7 @@ const History = () => {
             </div>
         </div>
     );
-    
+
     if (error) return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 text-center max-w-md mx-auto">
@@ -70,7 +71,7 @@ const History = () => {
                 </div>
 
                 {bookings.length === 0 ? (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="text-center bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-2xl mx-auto"
@@ -80,7 +81,7 @@ const History = () => {
                         <p className="text-gray-300">Your photography adventures will appear here once completed.</p>
                     </motion.div>
                 ) : (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -99,12 +100,13 @@ const History = () => {
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl transform group-hover:scale-105 transition-transform duration-300 blur"></div>
                                     <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 transform hover:scale-[1.02]">
                                         <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-2xl"></div>
-                                        
+
+                                        {/* Add null check for booking.photographerId */}
                                         <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                                            <span className="text-2xl">�</span>
-                                            {booking.photographerName || "Unknown"}
+                                            <span className="text-2xl">👤</span>
+                                            {booking.photographerId ? booking.photographerId.name : "Unknown Photographer"}
                                         </h3>
-                                        
+
                                         <div className="space-y-3 text-gray-300">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-blue-300">📅</span>
@@ -115,12 +117,13 @@ const History = () => {
                                                 <span>{booking.timeSlot}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-pink-300">🎁</span>
-                                                <span>{booking.package?.name || "N/A"}</span>
+                                                <span className="text-purple-300">📍</span>
+                                                <span>{booking.location}</span>
                                             </div>
+
                                             <div className="flex items-center gap-2">
-                                                <span className="text-green-300">💰</span>
-                                                <span>${booking.package?.price || "N/A"}</span>
+                                                <span className="text-pink-300">🎁</span>
+                                                <span>{booking.event || "Event not specified"}</span>
                                             </div>
                                         </div>
 
@@ -158,7 +161,7 @@ const History = () => {
                             className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl p-8 rounded-2xl shadow-2xl w-full max-w-lg 
                                      border border-white/20 relative"
                         >
-                            <button 
+                            <button
                                 onClick={() => setSelectedBooking(null)}
                                 className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
                             >
@@ -167,12 +170,12 @@ const History = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
-                            
+
                             <div className="text-center">
                                 <h3 className="text-3xl font-bold text-white mb-2">Rate Your Experience</h3>
                                 <p className="text-gray-300 mb-6">Your feedback helps our community grow!</p>
                             </div>
-                            
+
                             <RatePhotographer
                                 photographerId={selectedBooking.photographerId}
                                 bookingId={selectedBooking._id}

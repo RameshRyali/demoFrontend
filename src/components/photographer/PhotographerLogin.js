@@ -1,7 +1,8 @@
-// src/pages/PhotographerLogin.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginPhotographer } from '../../services/api';
+import Navbar from '../Home/Navbar'; // Adjust the import path as necessary
+import Footer from '../Home/footer'; // Adjust the import path as necessary
 
 const PhotographerLogin = ({ setToken, setPhotographer }) => {
   const [formData, setFormData] = useState({
@@ -21,11 +22,11 @@ const PhotographerLogin = ({ setToken, setPhotographer }) => {
       const response = await loginPhotographer(formData);
       setToken(response.token);
       setPhotographer(response.photographer);
-  
+
       // Store token and photographer data in local storage
       localStorage.setItem('token', response.token);
       localStorage.setItem('photographer', JSON.stringify(response.photographer));
-  
+
       navigate('/photographer-dashboard/profile'); // ✅ Redirect to correct route
     } catch (error) {
       alert(error.message);
@@ -33,42 +34,50 @@ const PhotographerLogin = ({ setToken, setPhotographer }) => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Photographer Login
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            onChange={handleChange}
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-all duration-300"
-          >
-            Login
-          </button>
-        </form>
-        <p className="text-center text-gray-500 text-sm mt-4">
-          Don't have an account?{' '}
-          <a href="/photographer/register" className="text-blue-600 hover:underline">
-            Sign Up
-          </a>
-        </p>
+    <div className="flex flex-col min-h-screen bg-white">
+      <Navbar />
+      <div className="flex-grow flex items-center justify-center py-12 px-4">
+        <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl border border-gray-200">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+            Welcome back, Photographer!
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="relative">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                className="w-full px-4 py-3 border border-gray-300 bg-gray-50 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="relative">
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="w-full px-4 py-3 border border-gray-300 bg-gray-50 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg"
+            >
+              Login
+            </button>
+          </form>
+          {/* <p className="text-center text-gray-700 text-sm mt-6">
+            Don't have an account?{' '}
+            <a href="/photographer/register" className="text-blue-600 hover:underline">
+              Sign Up
+            </a>
+          </p> */}
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

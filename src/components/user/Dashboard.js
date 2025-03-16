@@ -20,7 +20,7 @@ const Dashboard = ({ user, setToken, setUser }) => {
     localStorage.clear(); // Clears token, user, and all other data
     setToken(null);
     setUser(null);
-    navigate("/login");
+    navigate("/user/login");
   };
 
   if (loading) {

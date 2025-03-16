@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { getAllPhotographers, getPhotographerPortfolio } from '../../services/api';
 import BookSession from '../user/BookSession';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const PhotographerList = ({ token }) => {
   const [photographers, setPhotographers] = useState([]);
@@ -51,8 +51,8 @@ const PhotographerList = ({ token }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {photographers.map((photographer) => (
-            <motion.div 
-              key={photographer._id} 
+            <motion.div
+              key={photographer._id}
               className="group bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden transform transition-all duration-300 hover:translate-y-[-8px] hover:shadow-2xl border border-gray-100"
               whileHover={{ scale: 1.02 }}
               initial={{ opacity: 0, y: 20 }}
@@ -62,25 +62,25 @@ const PhotographerList = ({ token }) => {
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20" />
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
               </div>
-              
+
               <div className="relative px-6 pb-6 -mt-24">
                 <div className="flex justify-center">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-30 animate-pulse" />
-                    <img 
-                      src={photographer.profilePhoto || 'https://via.placeholder.com/150'} 
-                      alt={photographer.name} 
+                    <img
+                      src={photographer.profilePhoto || 'https://via.placeholder.com/150'}
+                      alt={photographer.name}
                       className="w-40 h-40 rounded-full object-cover border-4 border-white shadow-2xl relative z-10"
                     />
                   </div>
                 </div>
-                
+
                 <div className="mt-4 text-center">
                   <h3 className="text-2xl font-bold text-gray-800">{photographer.name}</h3>
-                  
+
                   <div className="mt-3 flex flex-wrap justify-center gap-2">
                     {photographer.specialization.map((spec, index) => (
-                      <span 
+                      <span
                         key={index}
                         className="px-3 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full text-sm font-medium text-gray-700"
                       >
@@ -88,13 +88,19 @@ const PhotographerList = ({ token }) => {
                       </span>
                     ))}
                   </div>
-                  
+
                   <div className="mt-4 py-2 px-4 bg-gray-50 rounded-2xl inline-block">
                     <p className="text-gray-600">
                       <span className="font-semibold">📅 {photographer.experience}</span> Years of Experience
                     </p>
                   </div>
-                  
+                  {/* Photographer Rating */}
+                  <div className="mt-2 py-2 px-4 bg-gray-50 rounded-2xl inline-block">
+                    <p className="text-gray-600">
+                      <span className="font-semibold">⭐ {photographer.averageRating || 'N/A'}</span> Rating
+                    </p>
+                  </div>
+
                   <div className="mt-6 space-y-3">
                     <button
                       onClick={() => handleBookNow(photographer)}
@@ -105,7 +111,7 @@ const PhotographerList = ({ token }) => {
                         Book Now
                       </span>
                     </button>
-                    
+
                     <button
                       onClick={() => handleViewPortfolio(photographer)}
                       className="w-full px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform transition-all duration-300 hover:translate-y-[-2px] focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 group-hover:from-gray-800 group-hover:to-gray-900"
@@ -124,12 +130,12 @@ const PhotographerList = ({ token }) => {
       </div>
 
       {showBookingModal && (
-        <motion.div 
+        <motion.div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <motion.div 
+          <motion.div
             className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg m-4"
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
@@ -143,19 +149,19 @@ const PhotographerList = ({ token }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <BookSession token={token} photographerId={selectedPhotographer?._id} />
+              <BookSession token={token} photographerId={selectedPhotographer?._id} photographerSpecializations = {selectedPhotographer.specialization} packages = {selectedPhotographer.packages} />
             </div>
           </motion.div>
         </motion.div>
       )}
 
       {showPortfolioModal && (
-        <motion.div 
+        <motion.div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <motion.div 
+          <motion.div
             className="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl w-full max-w-7xl m-4 max-h-[90vh]"
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
@@ -178,8 +184,8 @@ const PhotographerList = ({ token }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-[65vh] p-4 custom-scrollbar">
                 {portfolio.length > 0 ? (
                   portfolio.map((image, index) => (
-                    <motion.div 
-                      key={index} 
+                    <motion.div
+                      key={index}
                       className="group relative overflow-hidden rounded-2xl shadow-lg cursor-pointer bg-white hover:shadow-xl transition-all duration-300"
                       whileHover={{ scale: 1.02 }}
                       onClick={() => setSelectedImage(image.imageUrl)}
@@ -214,7 +220,7 @@ const PhotographerList = ({ token }) => {
 
       <AnimatePresence>
         {selectedImage && (
-          <motion.div 
+          <motion.div
             className="fixed inset-0 flex items-center justify-center bg-black/95 z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -228,9 +234,9 @@ const PhotographerList = ({ token }) => {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
             >
-              <motion.img 
-                src={selectedImage} 
-                alt="Selected" 
+              <motion.img
+                src={selectedImage}
+                alt="Selected"
                 className="rounded-2xl shadow-2xl max-w-full max-h-[90vh] object-contain"
               />
               <button

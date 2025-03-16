@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { bookSession } from "../../services/api";
 import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { bookSession } from "../../services/api";
 
-const BookSession = ({ token, photographerId }) => {
+const BookSession = ({ token, photographerId, photographerSpecializations, packages }) => {
   console.log("Received token in BookSession:", token);
   console.log("Selected Photographer ID:", photographerId);
 
@@ -11,11 +11,11 @@ const BookSession = ({ token, photographerId }) => {
     date: "",
     timeSlot: "",
     location: "",
-    package: {
-      name: "",
-      price: 0,
-    },
+    eventDuration: "",
+    event: "",
   });
+
+  const [selectedPackage, setSelectedPackage] = useState(null);
 
   useEffect(() => {
     setFormData((prev) => ({ ...prev, photographerId }));
@@ -25,10 +25,12 @@ const BookSession = ({ token, photographerId }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePackageChange = (e) => {
+  const handlePackageChange = (specialization) => {
+    const selected = packages.find(pkg => pkg.specialization === specialization);
+    setSelectedPackage(selected);
     setFormData({
       ...formData,
-      package: { ...formData.package, [e.target.name]: e.target.value },
+      event: specialization,
     });
   };
 
@@ -49,7 +51,7 @@ const BookSession = ({ token, photographerId }) => {
   const labelClasses = "text-gray-700 font-medium mb-1 flex items-center gap-2";
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-2xl mx-auto"
@@ -63,8 +65,63 @@ const BookSession = ({ token, photographerId }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <label className={labelClasses}>
+              <span>Events</span>
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {photographerSpecializations.map((specialization, index) => (
+                <motion.button
+                  key={index}
+                  type="button"
+                  className={`px-4 py-2 rounded-xl border ${formData.event === specialization ? 'border-blue-500 bg-blue-100' : 'border-gray-200 bg-white'} transition-all duration-200`}
+                  onClick={() => handlePackageChange(specialization)}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {specialization}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {selectedPackage && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div
+                  className="space-y-2"
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <label className={labelClasses}>
+                    <span>Event Price per day </span>
+                  </label>
+                  <input
+                    type="number"
+                    value={selectedPackage.price}
+                    className={inputClasses}
+                    readOnly
+                  />
+                </motion.div>
+
+                {/* <motion.div
+                  className="space-y-2"
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <label className={labelClasses}>
+                    <span>Package Duration</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedPackage.duration}
+                    className={inputClasses}
+                    readOnly
+                  />
+                </motion.div> */}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div 
+            <motion.div
               className="space-y-2"
               whileHover={{ scale: 1.01 }}
             >
@@ -80,7 +137,7 @@ const BookSession = ({ token, photographerId }) => {
               />
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="space-y-2"
               whileHover={{ scale: 1.01 }}
             >
@@ -98,7 +155,7 @@ const BookSession = ({ token, photographerId }) => {
             </motion.div>
           </div>
 
-          <motion.div 
+          <motion.div
             className="space-y-2"
             whileHover={{ scale: 1.01 }}
           >
@@ -115,41 +172,30 @@ const BookSession = ({ token, photographerId }) => {
             />
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div 
-              className="space-y-2"
-              whileHover={{ scale: 1.01 }}
-            >
-              <label className={labelClasses}>
-                <span>📦 Package Name</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                placeholder="e.g., Wedding Package"
-                className={inputClasses}
-                onChange={handlePackageChange}
-                required
-              />
-            </motion.div>
-
-            <motion.div 
-              className="space-y-2"
-              whileHover={{ scale: 1.01 }}
-            >
-              <label className={labelClasses}>
-                <span>💰 Package Price ($)</span>
-              </label>
-              <input
-                type="number"
-                name="price"
-                placeholder="Enter price"
-                className={inputClasses}
-                onChange={handlePackageChange}
-                required
-              />
-            </motion.div>
-          </div>
+          <motion.div
+            className="space-y-2"
+            whileHover={{ scale: 1.01 }}
+          >
+            <label className={labelClasses}>
+              <span>Event Duration (days)</span>
+            </label>
+            <input
+              type="number"
+              name="eventDuration"
+              value={formData.eventDuration}
+              className={inputClasses}
+              onChange={handleChange}
+              required
+            />
+          </motion.div>
+          <motion.button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-4 rounded-xl transition-all duration-300 text-lg font-medium shadow-lg hover:shadow-xl mt-8 flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span>Pay Now</span>
+          </motion.button>
 
           <motion.button
             type="submit"
@@ -157,7 +203,7 @@ const BookSession = ({ token, photographerId }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <span>📸 Confirm Booking</span>
+            <span>📸 Book now</span>
           </motion.button>
         </form>
       </div>

@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { submitRating } from "../../services/api";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { memo, useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
+import { submitRating } from "../../services/api";
 
-const RatePhotographer = ({ photographerId, bookingId, token, onClose }) => {
+const RatePhotographer = memo(({ photographerId, bookingId, token, onClose }) => {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState("");
     const [userId, setUserId] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -14,56 +16,81 @@ const RatePhotographer = ({ photographerId, bookingId, token, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!userId) return console.error("🚨 Error: User ID is missing!");
+        if (!userId || isSubmitting) return console.error("🚨 Error: User ID is missing or already submitting!");
 
+        setIsSubmitting(true);
         try {
             await submitRating(photographerId, userId, rating, comment, bookingId, token);
             onClose();
         } catch (error) {
             console.error("🚨 Error submitting rating:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 p-4">
-            <div className="bg-white p-4 rounded-lg shadow-lg w-72 text-center border border-gray-300">
-                <h3 className="text-lg font-bold text-gray-800">Customer Review</h3>
-                <div className="flex justify-center gap-1 my-2">
-                    {[...Array(5)].map((_, i) => (
-                        <FaStar
-                            key={i}
-                            className={`cursor-pointer text-xl transition ${i < rating ? "text-yellow-500" : "text-gray-300"}`}
-                            onClick={() => setRating(i + 1)}
-                        />
-                    ))}
-                </div>
-                <h4 className="text-md font-semibold text-gray-700">Amazing Photographer</h4>
-                <p className="text-xs text-gray-600 italic mb-2">"Capture the best moments with our professional photographers."</p>
-
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    <textarea
-                        className="w-full p-2 border rounded-md bg-gray-100 text-gray-700 focus:ring focus:ring-yellow-300"
-                        placeholder="Write your review..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                    />
-                    <button
-                        type="submit"
-                        className="w-full bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-md font-semibold transition"
+        <AnimatePresence>
+            {onClose && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 flex justify-center items-center bg-black/70 backdrop-blur-sm p-4 z-50"
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-600 relative"
                     >
-                        Submit Review
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="w-full bg-gray-400 hover:bg-gray-500 text-white p-2 rounded-md transition"
-                    >
-                        Cancel
-                    </button>
-                </form>
-            </div>
-        </div>
+                        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                            <span className="sr-only">Close</span>
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        
+                        <h3 className="text-2xl font-bold text-center mb-4">Rate Your Experience</h3>
+                        <p className="text-gray-300 text-center mb-6">Your feedback helps our community grow!</p>
+                        
+                        <div className="flex justify-center gap-1 mb-4">
+                            {[...Array(5)].map((_, i) => (
+                                <FaStar
+                                    key={i}
+                                    className={`cursor-pointer text-3xl transition ${i < rating ? "text-yellow-500" : "text-gray-500"}`}
+                                    onClick={() => setRating(i + 1)}
+                                />
+                            ))}
+                        </div>
+                        
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <textarea
+                                className="w-full p-3 border rounded-md bg-gray-700 text-white placeholder-gray-400 focus:ring focus:ring-yellow-500"
+                                placeholder="Write your review..."
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                            />
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-lg font-semibold transition"
+                            >
+                                {isSubmitting ? "Submitting..." : "Submit Review"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg transition"
+                            >
+                                Cancel
+                            </button>
+                        </form>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
-};
+});
 
 export default RatePhotographer;

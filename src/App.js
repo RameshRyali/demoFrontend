@@ -1,37 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
-import LandingPage from "./components/user/LandingPage";
+import AdminLogin from "./components/admin/AdminLogin";
 import PhotographerLogin from "./components/photographer/PhotographerLogin";
 import PhotographerRegister from "./components/photographer/PhotographerRegister";
 import UserLogin from "./components/user/Login";
 import UserRegister from "./components/user/Register";
-import AdminLogin from "./components/admin/AdminLogin";
 
 // User Components
-import Dashboard from "./components/user/Dashboard";
-import Profile from "./components/user/Profile";
-import History from "./components/user/History";
-import Notifications from "./components/user/Notifications";
 import PhotographerDetails from "./components/photographer/PhotographerDetails";
 import PhotographerList from "./components/photographer/PhotographerList";
 import BookSession from "./components/user/BookSession";
+import Dashboard from "./components/user/Dashboard";
+import History from "./components/user/History";
+import Notifications from "./components/user/Notifications";
+import Profile from "./components/user/Profile";
 
 // Photographer Components
-import PhotographerDashboard from "./components/photographer/PhotographerDashboard";
-import PhotographerProfile from "./components/photographer/PhotographerProfile";
 import PhotographerBookings from "./components/photographer/PhotographerBooking";
-import PhotographerPortfolio from "./components/photographer/PhotographerPortfolio";
+import PhotographerDashboard from "./components/photographer/PhotographerDashboard";
 import PhotographerNotifications from "./components/photographer/PhotographerNotifications";
+import PhotographerPortfolio from "./components/photographer/PhotographerPortfolio";
+import PhotographerProfile from "./components/photographer/PhotographerProfile";
 
 // Admin Components
+import AddPhotographer from "./components/admin/AddPhotographer";
 import AdminDashboard from "./components/admin/AdminDashboard";
-import AdminProfile from "./components/admin/AdminProfile";
 import AdminNotifications from "./components/admin/AdminNotifications";
-import ManagePhotographers from "./components/admin/ManagePhotographers";
-import ManageUsers from "./components/admin/ManageUsers";
-
+import Analytics from "./components/admin/Analytics";
+import PhotographerListAdmin from "./components/admin/PhotographerListAdmin";
+import Sidebar from "./components/admin/Sidebar";
+import LandingPage from "./LandingPage";
 const App = () => {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
@@ -105,24 +105,20 @@ const App = () => {
             <Route path="profile" element={<PhotographerProfile photographer={photographer} />} />
             <Route path="bookings" element={<PhotographerBookings token={token} />} />
             <Route path="portfolio" element={<PhotographerPortfolio photographer={photographer} token={token} />} />
-            <Route
-  path="notifications"
-  element={
-    <PhotographerNotifications token={token} photographerId={photographer?._id} />
-  }
-/>
-
+            <Route path="notifications" element={<PhotographerNotifications token={token} photographerId={photographer?._id} />}
+          />
             {console.log("photographer id", photographer._id)}
           </Route>
         )}
 
         {/* Admin Dashboard Routes */}
         {token && admin && (
-          <Route path="/admin-dashboard/*" element={<AdminDashboard admin={admin} setToken={setToken} setAdmin={setAdmin} />}>
-            <Route path="profile" element={<AdminProfile admin={admin} />} />
+          <Route path="/Sidebar/*" element={<Sidebar admin={admin} setToken={setToken} setAdmin={setAdmin} />}>
+            <Route path="admin-dashboard" element={<AdminDashboard />} />
             <Route path="notifications" element={<AdminNotifications />} />
-            <Route path="manage-photographers" element={<ManagePhotographers />} />
-            <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="add-photographer" element={<AddPhotographer />} />
+            <Route path="photographer-list" element={<PhotographerListAdmin />} />
+            <Route path="analytics" element={<Analytics />} />
           </Route>
         )}
       </Routes>

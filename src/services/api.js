@@ -57,7 +57,7 @@ export const getUserCompletedBookingHistory = async () => {
       return { error: "User not authenticated" };
     }
 
-    const response = await axios.get("http://localhost:5000/api/users/history?status=Completed", {
+    const response = await axios.get("http://localhost:5000/api/users/completed-bookings", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -67,6 +67,7 @@ export const getUserCompletedBookingHistory = async () => {
     return { error: error.response?.data?.message || "Failed to fetch completed booking history" };
   }
 };
+
 
 export const getUserBookings = async (token) => {
   try {
@@ -82,6 +83,7 @@ export const getUserBookings = async (token) => {
 export const bookSession = async (sessionData, token) => {
   try {
     console.log("Booking session with token:", token);
+    console.log("Booking Data:", sessionData);
     const response = await axios.post(`${API_URL}/users/book-session`, sessionData, {
       headers: {
         'Content-Type': 'application/json',
@@ -110,6 +112,7 @@ export const getAllPhotographers = async (token) => {
 // Photographer APIs
 export const registerPhotographer = async (photographerData) => {
   try {
+    console.log("Photographer Data:", photographerData);
     const response = await axios.post(`${API_URL}/photographers/register`, photographerData);
     return response.data;
   } catch (error) {
@@ -139,6 +142,7 @@ export const getPhotographerProfile = async (token) => {
 
 export const updatePhotographerProfile = async (photographerData, token) => {
   try {
+    console.log("Updating Photographer Profile with data:", photographerData);
     const response = await axios.put(`${API_URL}/photographers/profile`, photographerData, {
       headers: { Authorization: `Bearer ${token}` },
     });
