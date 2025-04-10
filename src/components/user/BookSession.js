@@ -188,14 +188,14 @@ const BookSession = ({ token, photographerId, photographerSpecializations, packa
               required
             />
           </motion.div>
-          <motion.button
+          {/* <motion.button
             type="submit"
             className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-4 rounded-xl transition-all duration-300 text-lg font-medium shadow-lg hover:shadow-xl mt-8 flex items-center justify-center gap-2"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <span>Pay Now</span>
-          </motion.button>
+          </motion.button> */}
 
           <motion.button
             type="submit"

@@ -42,7 +42,7 @@ const Sidebar = ({ admin, setToken, setAdmin }) => {
               </div>
               {!isCollapsed && (
                 <div className="overflow-hidden">
-                  <h2 className="text-lg font-semibold truncate">Admin Panel</h2>
+                  <h2 className="text-lg font-semibold truncate">Admin</h2>
                   <p className="text-sm text-gray-400">Dashboard</p>
                 </div>
               )}
